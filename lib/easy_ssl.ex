@@ -241,15 +241,15 @@ defmodule EasySSL do
   defp to_generalized_time({:generalTime, time}), do: time
   defp to_generalized_time({:utcTime, time}) do
     year = time |> Enum.take(2) |> List.to_integer()
-    prefix = if year >=  50, do: '19', else: '20'
+    prefix = if year >=  50, do: ~c'19', else: ~c'20'
     prefix ++ time
   end
 
   defp asn1_to_epoch(asn1_time) do
     {year, rest} = Enum.split(asn1_time, 4)
     date = case rest |> Enum.chunk_every(2) do
-      [month, day, hour, minute, second, 'Z'] -> [year, month, day, hour, minute, second]
-      [month, day, hour, minute, 'Z'] -> [year, month, day, hour, minute, '00']
+      [month, day, hour, minute, second, ~c'Z'] -> [year, month, day, hour, minute, second]
+      [month, day, hour, minute, ~c'Z'] -> [year, month, day, hour, minute, ~c'00']
       _ ->
         Logger.error("Unhandled ASN1 time structure - #{asn1_time}}")
         nil
@@ -602,7 +602,7 @@ defmodule EasySSL do
     |> Enum.reduce([], fn char, charlist ->
       charlist = [char | charlist]
       case char in 65..90 do
-        true -> List.insert_at(charlist, 1, ' ')
+        true -> List.insert_at(charlist, 1, ~s' ')
         false -> charlist
       end
     end)
